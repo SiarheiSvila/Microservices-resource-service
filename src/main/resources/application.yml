@@ -1,2 +1,5 @@
 server:
   port: 8080
+localstack:
+  uri: http://localhost:4566
+  bucketName: resources-bucket

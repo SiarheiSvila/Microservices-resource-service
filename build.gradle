@@ -11,12 +11,22 @@ repositories {
 }
 
 def springVersion = '2.7.0'
+def awsSdkVersion = '2.16.1'
 
 dependencies {
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter', version: springVersion
     // https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: springVersion
+
+    // aws sdk
+    implementation group: 'software.amazon.awssdk', name: 'bom', version: awsSdkVersion
+    implementation group: 'software.amazon.awssdk', name: 's3', version: awsSdkVersion
+
+
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.24'
 }
 
 test {
