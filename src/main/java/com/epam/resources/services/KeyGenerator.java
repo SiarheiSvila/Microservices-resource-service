@@ -10,7 +10,7 @@ public class KeyGenerator {
         Random rnd = new Random();
         int number = rnd.nextInt(99999999);
 
-        // this will convert any number sequence into 6 character.
+        // this will convert any number sequence into 8 character.
         return String.format("%08d", number);
     }
 }

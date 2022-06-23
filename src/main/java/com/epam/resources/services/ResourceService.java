@@ -10,16 +10,10 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
-import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -28,14 +22,6 @@ public class ResourceService {
     private final S3Client s3Client;
     private final StorageProperties storageProperties;
     private final KeyGenerator keyGenerator;
-
-    public List<S3Object> getResources() {
-        ListObjectsV2Request listObjectsRequest = ListObjectsV2Request.builder()
-                .bucket(storageProperties.getBucketName())
-                .build();
-        ListObjectsV2Response listObjectsResponse = s3Client.listObjectsV2(listObjectsRequest);
-        return listObjectsResponse.contents();
-    }
 
     public byte[] getResource(String id) {
         GetObjectRequest request = GetObjectRequest.builder()
