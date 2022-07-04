@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 set +x
-cd helpers
-./install_localstack.sh
+cd ../docker
+docker-compose up -d
+cd ../scripts/helpers
 ./build_terraform.sh
