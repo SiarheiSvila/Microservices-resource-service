@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +28,7 @@ public class ResourceController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public long createResource(@ModelAttribute CreateResourceRequest resourceRequest) throws IOException {
-        log.debug("Create request received %s", resourceRequest.getResource().getOriginalFilename());
+        log.debug("Create request received {}", resourceRequest.getResource().getOriginalFilename());
         return resourceService.createResource(resourceRequest);
     }
 

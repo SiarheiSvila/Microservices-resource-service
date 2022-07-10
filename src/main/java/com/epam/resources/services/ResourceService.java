@@ -1,11 +1,14 @@
 package com.epam.resources.services;
 
+import com.epam.resources.activemq.ResourceCreatedQueueProducer;
 import com.epam.resources.api.CreateResourceRequest;
 import com.epam.resources.configs.StorageProperties;
 import com.epam.resources.entities.Resource;
 import com.epam.resources.repositories.ResourceJpaRepository;
 import com.epam.resources.services.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -23,11 +26,11 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ResourceService {
-
     private final S3Client s3Client;
     private final ResourceJpaRepository resourceJpaRepository;
     private final StorageProperties storageProperties;
     private final KeyGenerator keyGenerator;
+    private final ResourceCreatedQueueProducer queueProducer;
 
     public byte[] getResource(long id) {
         Optional<Resource> resource = resourceJpaRepository.findById(id);
@@ -45,6 +48,7 @@ public class ResourceService {
         return response.asByteArray();
     }
 
+    @Retryable(value = Exception.class)
     public long createResource(CreateResourceRequest createRequest) throws IOException {
         String key = keyGenerator.generateKey();
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -53,6 +57,7 @@ public class ResourceService {
                 .build();
         s3Client.putObject(putObjectRequest, RequestBody.fromBytes(createRequest.getResource().getBytes()));
         Resource resource = resourceJpaRepository.save(new Resource(key));
+        queueProducer.sendResourceCreatedToQueue(resource.getId());
         return resource.getId();
     }
 
@@ -66,7 +71,11 @@ public class ResourceService {
                     s3Client.deleteObject(deleteRequest);
                 }
         );
-        resourceJpaRepository.deleteById(id);
+        try {
+            resourceJpaRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException ignored) {
+
+        }
         return id;
     }
 }

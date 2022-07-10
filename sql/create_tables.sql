@@ -1,4 +1,0 @@
-CREATE DATABASE resources;
-SET SCHEMA resources;
-
-CREATE TABLE
